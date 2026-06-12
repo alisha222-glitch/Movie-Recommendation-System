@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # TMDB API KEY
-API_KEY = "a9f85b7662132b27d8b7ab4e4cc1fc05"
+API_KEY = st.secrets["a9f85b7662132b27d8b7ab4e4cc1fc05"]
 
 st.set_page_config(page_title="Movie Recommendation System", layout="wide")
 
@@ -13,7 +13,10 @@ st.markdown(
     "<h1 style='text-align:center;'>🎬 Movie Recommendation System</h1>",
     unsafe_allow_html=True
 )
-
+st.markdown(
+    "<h4 style='text-align:center;'>Developed by Alisha</h4>",
+    unsafe_allow_html=True
+)
 # Load Dataset
 movie = pd.read_csv("Dataset for MRS.csv")
 
