@@ -5,8 +5,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # TMDB API KEY
-API_KEY = st.secrets["a9f85b7662132b27d8b7ab4e4cc1fc05"]
-
+API_KEY = st.secrets["TMDB_API_KEY"]
 st.set_page_config(page_title="Movie Recommendation System", layout="wide")
 
 st.markdown(
