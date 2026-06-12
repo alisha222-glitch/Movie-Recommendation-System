@@ -1,9 +1,18 @@
 import streamlit as st
 import pandas as pd
+import requests
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-st.title("🎬 Movie Recommendation System")
+# TMDB API KEY
+API_KEY = "a9f85b7662132b27d8b7ab4e4cc1fc05"
+
+st.set_page_config(page_title="Movie Recommendation System", layout="wide")
+
+st.markdown(
+    "<h1 style='text-align:center;'>🎬 Movie Recommendation System</h1>",
+    unsafe_allow_html=True
+)
 
 # Load Dataset
 movie = pd.read_csv("Dataset for MRS.csv")
@@ -31,11 +40,21 @@ vectors = cv.fit_transform(movie['tags']).toarray()
 # Similarity Matrix
 similarity = cosine_similarity(vectors)
 
-# Movie Selection
-selected_movie = st.selectbox(
-    "Select a Movie",
-    movie['Movie_Title'].values
-)
+# Poster Function
+def get_movie_poster(movie_name):
+    try:
+        url = f"https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={movie_name}"
+        response = requests.get(url).json()
+
+        if response["results"]:
+            poster_path = response["results"][0]["poster_path"]
+
+            if poster_path:
+                return "https://image.tmdb.org/t/p/w500" + poster_path
+    except:
+        pass
+
+    return None
 
 # Recommendation Function
 def recommend(movie_name):
@@ -50,11 +69,41 @@ def recommend(movie_name):
 
     return [movie.iloc[i[0]].Movie_Title for i in movie_list]
 
-# Button
-if st.button("Recommend"):
+# Movie Selection
+selected_movie = st.selectbox(
+    "🎥 Select a Movie",
+    movie['Movie_Title'].dropna().values
+)
+
+# Recommendation Button
+if st.button("Recommend Movies"):
+
     recommendations = recommend(selected_movie)
 
     st.subheader("Recommended Movies")
 
-    for movie_name in recommendations:
-        st.write(movie_name)
+    cols = st.columns(5)
+
+    for i, movie_name in enumerate(recommendations):
+
+        with cols[i]:
+
+            poster = get_movie_poster(movie_name)
+
+            if poster:
+                st.image(poster, use_container_width=True)
+
+            st.markdown(
+                f"<center><b>{movie_name}</b></center>",
+                unsafe_allow_html=True
+            )
+
+            trailer_link = (
+                f"https://www.youtube.com/results?search_query="
+                f"{movie_name}+official+trailer"
+            )
+
+            st.markdown(
+                f"<center><a href='{trailer_link}' target='_blank'>▶ Trailer</a></center>",
+                unsafe_allow_html=True
+            )
